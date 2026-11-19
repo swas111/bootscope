@@ -1,0 +1,17 @@
+server:
+  port: 8765
+
+spring:
+  ai:
+    mcp:
+      server:
+        # Stateless Streamable HTTP (MCP spec 2025-11-25) — the transport Bootscope targets.
+        protocol: STATELESS
+        name: hello-mcp
+        version: 0.1.0
+        type: SYNC
+
+# Quieter startup logs for the demo.
+logging:
+  level:
+    root: INFO
