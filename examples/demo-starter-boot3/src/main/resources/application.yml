@@ -1,0 +1,14 @@
+server:
+  port: 8767
+
+spring:
+  ai:
+    mcp:
+      server:
+        protocol: STATELESS
+        name: demo-starter-boot3
+        version: 0.1.0
+        type: SYNC
+
+bootscope:
+  enabled: true

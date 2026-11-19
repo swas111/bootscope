@@ -1,0 +1,2 @@
+# Bootscope starter auto-configuration (Spring Boot 3.5). One class per line.
+io.github.swas111.bootscope.boot3.BootscopeAutoConfiguration
