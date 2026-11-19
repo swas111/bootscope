@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Bootscope pre-commit hook: block commits that contain likely secrets.
+# Enabled once per clone with:  git config core.hooksPath .githooks
+set -euo pipefail
+exec "$(git rev-parse --show-toplevel)/scripts/check-secrets.sh" --staged

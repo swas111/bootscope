@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.swas111</groupId>
+    <artifactId>bootscope-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Bootscope (parent)</name>
+    <description>MCP server starter that lets AI assistants safely inspect a running Spring Boot app (read-only diagnostics).</description>
+    <url>https://github.com/swas111/bootscope</url>
+
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <!--
+        Fat core, thin adapters.
+        The parent only centralises shared build config and test dependencies.
+        It does NOT import a Spring Boot BOM: the Boot 3 and Boot 4 BOMs collide,
+        so each adapter module imports its own BOM locally.
+    -->
+    <modules>
+        <module>bootscope-core</module>
+        <module>bootscope-boot3</module>
+        <module>bootscope-boot4</module>
+        <module>bootscope-spring-boot3-starter</module>
+        <module>bootscope-spring-boot4-starter</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Pinned 2026-11-19 (re-checked before pinning; see docs/DESIGN_PLAN.md). -->
+        <!-- Latest stable lines only; release candidates are intentionally avoided. -->
+        <spring-boot3.version>3.5.16</spring-boot3.version>   <!-- final OSS 3.5.x; EOL 2026-06-30 -->
+        <spring-boot4.version>4.1.2</spring-boot4.version>    <!-- latest stable 4.x (4.2.0 still RC) -->
+        <spring-ai1.version>1.1.8</spring-ai1.version>        <!-- for Boot 3; MCP Java SDK 0.18.3 -->
+        <spring-ai2.version>2.0.2</spring-ai2.version>        <!-- for Boot 4; MCP Java SDK 2.0.0 -->
+
+        <junit.version>5.11.4</junit.version>
+        <assertj.version>3.27.3</assertj.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.5.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
