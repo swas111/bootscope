@@ -1,0 +1,15 @@
+server:
+  port: 8766
+
+spring:
+  ai:
+    mcp:
+      server:
+        protocol: STATELESS
+        name: demo-starter
+        version: 0.1.0
+        type: SYNC
+
+# Phase 2 demo: flip this to false and bootscope_ping disappears from tools/list.
+bootscope:
+  enabled: true
