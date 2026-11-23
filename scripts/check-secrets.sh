@@ -50,7 +50,9 @@ patterns=(
 )
 
 # Values that are clearly NOT real secrets -> ignore the matching line.
-allow_re='(changeme|change-me|your[-_]|example|placeholder|dummy|sample|redacted|REDACTED|xxx+|\*\*\*|\$\{[^}]+\}|<[^>]+>|password[\"'\'' ]*[:=][[:space:]]*[\"'\'']?(password|secret|pass)\b)'
+# A line carrying the pragma `bootscope:allow-secret` is exempt: used for the test
+# fixtures and the Redactor source, whose whole purpose is to hold secret-shaped text.
+allow_re='(bootscope:allow-secret|changeme|change-me|your[-_]|example|placeholder|dummy|sample|redacted|REDACTED|xxx+|\*\*\*|\$\{[^}]+\}|<[^>]+>|password[\"'\'' ]*[:=][[:space:]]*[\"'\'']?(password|secret|pass)\b)'
 
 found=0
 
