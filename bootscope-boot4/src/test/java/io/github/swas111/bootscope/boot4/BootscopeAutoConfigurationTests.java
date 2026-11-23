@@ -1,6 +1,7 @@
 package io.github.swas111.bootscope.boot4;
 
-import io.github.swas111.bootscope.core.DiagnosticsInfo;
+import io.github.swas111.bootscope.core.OutputBudget;
+import io.github.swas111.bootscope.core.Redactor;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,9 +13,10 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Proves the starter's conditions with {@link ApplicationContextRunner}: a tiny context is spun
- * up with/without the Actuator class and the {@code bootscope.enabled} property, and we assert
- * which beans appear. No web server, no MCP transport — just the wiring.
+ * Proves the starter's conditions with {@link ApplicationContextRunner}: the tools bean and the
+ * safety-layer beans appear only when Actuator is present and {@code bootscope.enabled} is on.
+ * No backing beans (HealthEndpoint, MeterRegistry) are supplied here, so tools that need them
+ * degrade gracefully rather than failing context startup.
  */
 class BootscopeAutoConfigurationTests {
 
@@ -22,10 +24,11 @@ class BootscopeAutoConfigurationTests {
             .withConfiguration(AutoConfigurations.of(BootscopeAutoConfiguration.class));
 
     @Test
-    void registersToolWhenActuatorPresentAndEnabledByDefault() {
+    void registersToolsAndSafetyLayerWhenActuatorPresentAndEnabledByDefault() {
         runner.run(context -> {
-            assertThat(context).hasSingleBean(BootscopeDiagnosticsTools.class);
-            assertThat(context).hasSingleBean(DiagnosticsInfo.class);
+            assertThat(context).hasSingleBean(BootscopeTools.class);
+            assertThat(context).hasSingleBean(Redactor.class);
+            assertThat(context).hasSingleBean(OutputBudget.class);
             assertThat(context).hasSingleBean(BootscopeProperties.class);
         });
     }
@@ -33,22 +36,28 @@ class BootscopeAutoConfigurationTests {
     @Test
     void backsOffWhenDisabled() {
         runner.withPropertyValues("bootscope.enabled=false")
-                .run(context -> assertThat(context).doesNotHaveBean(BootscopeDiagnosticsTools.class));
+                .run(context -> assertThat(context).doesNotHaveBean(BootscopeTools.class));
     }
 
     @Test
     void backsOffWhenActuatorAbsent() {
         runner.withClassLoader(new FilteredClassLoader(HealthEndpoint.class))
-                .run(context -> assertThat(context).doesNotHaveBean(BootscopeDiagnosticsTools.class));
+                .run(context -> assertThat(context).doesNotHaveBean(BootscopeTools.class));
     }
 
     @Test
-    void toolReturnsSafeReadOnlyStatusLine() {
+    void pingIsReadOnlyAndAppOverviewWorksWithoutBackingBeans() {
         runner.run(context -> {
-            BootscopeDiagnosticsTools tools = context.getBean(BootscopeDiagnosticsTools.class);
-            assertThat(tools.bootscopePing())
-                    .contains("bootscope")
-                    .contains("read-only");
+            BootscopeTools tools = context.getBean(BootscopeTools.class);
+            assertThat(tools.bootscopePing()).contains("bootscope").contains("read-only");
+            // app_overview needs only the Environment, so it answers even in this minimal context.
+            assertThat(tools.appOverview()).contains("App ");
         });
+    }
+
+    @Test
+    void outputBudgetHonoursConfiguredMaxChars() {
+        runner.withPropertyValues("bootscope.output.max-chars=1234")
+                .run(context -> assertThat(context.getBean(OutputBudget.class).maxChars()).isEqualTo(1234));
     }
 }

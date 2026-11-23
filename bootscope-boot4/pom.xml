@@ -64,6 +64,12 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- For RoutesSource (RequestMappingHandlerMapping). Optional: routes tool backs off without it. -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <optional>true</optional>
+        </dependency>
 
         <!-- Tests -->
         <dependency>

@@ -36,6 +36,8 @@
 
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
+        <!-- Keep method parameter names in the bytecode: Spring AI binds @McpToolParam by name. -->
+        <maven.compiler.parameters>true</maven.compiler.parameters>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
